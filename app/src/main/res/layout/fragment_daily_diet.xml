@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
+        android:padding="10dp"
+        android:text="Record the consumed food:"
+        android:textSize="25sp"
+        android:textStyle="bold" />
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <Spinner
+            android:id="@+id/spinner_food_category"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_marginTop="20dp"
+            android:layout_weight="1"
+            android:background="#ffffff"
+            android:paddingLeft="2dp" />
+
+        <Spinner
+            android:id="@+id/spinner_food_item"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_marginTop="20dp"
+            android:layout_weight="1"
+            android:background="#ffffff"
+            android:paddingLeft="2dp" />
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
+        android:padding="10dp"
+        android:text="Add new food:"
+        android:textSize="25sp"
+        android:textStyle="bold" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <EditText
+            android:id="@+id/et_search_food"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:ems="10"
+            android:inputType="textPersonName"
+            android:hint="Search Food"
+            android:layout_weight="1"/>
+
+        <Button
+            android:id="@+id/btn_add_food"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="ADD FOOD"
+            android:layout_weight="1"/>
+    </LinearLayout>
+
+
+    <TextView
+        android:id="@+id/tv_food_detail"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:padding="10dp"
+        android:textSize="15sp"
+        android:textStyle="bold" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/img_food"
+            android:layout_width="160dp"
+            android:layout_height="160dp"
+            android:padding="10dp"
+            android:layout_marginTop="10dp"/>
+
+        <TextView
+            android:id="@+id/tv_food_desc"
+            android:layout_width="match_parent"
+            android:layout_height="160dp"
+            android:layout_marginTop="10dp"
+            android:padding="10dp"
+            android:textSize="15sp"
+            android:textStyle="bold" />
+
+    </LinearLayout>
+
+
+
+</LinearLayout>
