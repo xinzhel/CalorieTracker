@@ -6,24 +6,24 @@
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/nav_home"
-            android:icon="@drawable/ic_menu_slideshow"
+            android:icon="@drawable/home"
             android:title="Home" />
         <item
             android:id="@+id/nav_daily_diet"
-            android:icon="@drawable/ic_menu_slideshow"
+            android:icon="@drawable/diet"
             android:title="My Daily Diet" />
         <item
             android:id="@+id/nav_steps"
-            android:icon="@drawable/ic_menu_slideshow"
+            android:icon="@drawable/step"
             android:title="Steps" />
         <item
             android:id="@+id/nav_report"
-            android:icon="@drawable/ic_menu_slideshow"
+            android:icon="@drawable/report"
             android:title="Report" />
 
         <item
             android:id="@+id/nav_map"
-            android:icon="@drawable/ic_menu_gallery"
+            android:icon="@drawable/google_maps"
             android:title="Map" />
 
     </group>

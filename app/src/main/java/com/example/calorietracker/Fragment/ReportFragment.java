@@ -10,6 +10,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,20 +30,25 @@ import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.Description;
+import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
+import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
-import com.github.mikephil.charting.formatter.IAxisValueFormatter;
+import com.github.mikephil.charting.formatter.*;
 import com.github.mikephil.charting.utils.ColorTemplate;
+import com.github.mikephil.charting.utils.ViewPortHandler;
+
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -53,7 +59,7 @@ public class ReportFragment extends Fragment {
     View v;
 
     private float[] yData = new float[3];
-    private String[] xData = {"Calorie consumed", "Calorie burned", "Calorie Remaining"};
+    private String[] pieLabel = {"Calorie consumed", "Calorie burned", "Calorie Remaining"};
 
     PieChart pieChart;
     DatePicker date;
@@ -68,6 +74,10 @@ public class ReportFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         v = inflater.inflate(R.layout.fragment_report, container, false);
+
+        // set the title of toolbar
+        Toolbar toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
+        toolbar.setTitle("Report");
 
         pieChart = (PieChart) v.findViewById(R.id.chart);
         date = (DatePicker) v.findViewById(R.id.dp_report);
@@ -85,9 +95,8 @@ public class ReportFragment extends Fragment {
         description.setText("Daily Report");
         pieChart.setDescription(description);
         pieChart.setHoleRadius(25f);
-        pieChart.setCenterText(chooseD);
         pieChart.setCenterTextSize(10);
-        pieChart.setUsePercentValues(true);
+//        pieChart.setUsePercentValues(true);
 
         Calendar now = Calendar.getInstance();
         date.init(
@@ -164,61 +173,7 @@ public class ReportFragment extends Fragment {
         return v;
     }
 
-    private class DispleyBarChart extends AsyncTask<String, Void, BarData> {
-        @Override
-        protected BarData doInBackground(String... params) {
 
-            // get calorieConsumed
-            SharedPreferences sp = getActivity().getApplicationContext().getSharedPreferences("User", MODE_MULTI_PROCESS);
-            int userId = sp.getInt("userId", 0);
-            JSONObject result = RestClient.getPeriodReport(userId, params[0], params[1]);
-            Log.i("ReportFragment", params[0] + params[1]);
-
-            int calorieConsumed = 0;
-            int calorieBurned = 0;
-            try {
-                calorieConsumed = result.getInt("caloriesConsumed");
-                calorieBurned = result.getInt("caloriesBurned");
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-
-            List<BarEntry> entries = new ArrayList<>();
-            entries.add(new BarEntry(0f,(float) calorieConsumed ));
-            entries.add(new BarEntry(1f, (float) calorieBurned));
-
-            BarDataSet set = new BarDataSet(entries, "BarDataSet");
-            set.setColors(ColorTemplate.VORDIPLOM_COLORS);
-
-            BarData data = new BarData(set);
-            data.setBarWidth(0.9f); // set custom bar width
-
-            return data;
-        }
-
-
-        @Override
-        protected void onPostExecute(BarData data) {
-
-            barChart.setData(data);
-            barChart.setFitBars(true); // make the x-axis fit exactly all bars
-            barChart.invalidate(); // refresh
-
-            // the labels that should be drawn on the XAxis
-            final String[] report = new String[] { "total calorie consumed", "total calorie burned"};
-            IAxisValueFormatter formatter = new IAxisValueFormatter() {
-                @Override
-                public String getFormattedValue(float value, AxisBase axis) {
-                    return report[(int) value];
-                }
-            };
-            XAxis xAxis = barChart.getXAxis();
-            xAxis.setGranularity(1f); // minimum axis-step (interval) is 1
-            xAxis.setValueFormatter(formatter);
-
-            xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
-        }
-    }
 
 
     private class DisplayBarChart extends AsyncTask<String, Void, JSONArray> {
@@ -244,9 +199,9 @@ public class ReportFragment extends Fragment {
                 try {
                     obj = result.getJSONObject(i);
                     calorieConsumed[i] = obj.getInt("caloriesConsumed");
-                    Log.i("TEST", calorieConsumed[i]+"");
+                    Log.i("TEST", i + "" + calorieConsumed[i]);
                     calorieBurned[i] = obj.getInt("caloriesBurned");
-                    Log.i("TEST", calorieBurned[i]+"");
+                    Log.i("TEST", i + "" + calorieBurned[i]);
                     xlabel[i] = obj.getString("date");
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -257,8 +212,9 @@ public class ReportFragment extends Fragment {
             List<BarEntry> entriesGroup2 = new ArrayList<>();
             // fill the lists
             for(int i = 0; i < calorieConsumed.length; i++) {
-                entriesGroup1.add(new BarEntry(i, calorieConsumed[i]));
-                entriesGroup2.add(new BarEntry(i, calorieBurned[i]));
+                entriesGroup1.add(new BarEntry( i, calorieConsumed[i], xlabel[i]));
+                Log.i("TEST", "i is:" + i);
+                entriesGroup2.add(new BarEntry( i, calorieBurned[i],  xlabel[i]));
             }
             BarDataSet set1 = new BarDataSet(entriesGroup1, "caloriesConsumed");
             set1.setColor(Color.BLUE);
@@ -266,32 +222,58 @@ public class ReportFragment extends Fragment {
             set2.setColor(Color.CYAN);
 
 
+
+
+
+
+            float groupSpace = 0.06f;
+            float barSpace = 0.02f; // x2 dataset
             float barWidth = 0.45f; // x2 dataset
+            // (0.02 + 0.45) * 2 + 0.06 = 1.00 -> interval per "group"
 
             BarData data = new BarData(set1, set2);
             data.setBarWidth(barWidth); // set the width of each bar
 
-            float groupSpace = 0.06f;
-            float barSpace = 0.02f; // x2 dataset
             barChart.setData(data);
-            barChart.setFitBars(true); // make the x-axis fit exactly all bars
-            barChart.groupBars(0f, groupSpace, barSpace); // perform the "explicit" grouping
+//            barChart.setFitBars(true); // make the x-axis fit exactly all bars
+            barChart.groupBars(-0.5f, groupSpace, barSpace); // perform the "explicit" grouping
             barChart.invalidate(); // refresh
 
-//            // the labels that should be drawn on the XAxis
 
-            IAxisValueFormatter formatter = new IAxisValueFormatter() {
+            // customize x axis
+            XAxis xAxis = barChart.getXAxis();
+            xAxis.setLabelRotationAngle(27f);
+            xAxis.setGranularity(1f); // minimum axis-step (interval) is 1
+            // the labels that should be drawn on the XAxis
+            xAxis.setValueFormatter(new IAxisValueFormatter(){
+
                 @Override
                 public String getFormattedValue(float value, AxisBase axis) {
-                    return xlabel[(int) value];
-                }
-            };
-            XAxis xAxis = barChart.getXAxis();
-            xAxis.setLabelRotationAngle(7f);
-            xAxis.setGranularity(1f); // minimum axis-step (interval) is 1
-            xAxis.setValueFormatter(formatter);
+                    String res = "";
+                    String strVal = String.valueOf((int)value);
+                    Log.i("TEST", "VALUE" + strVal);
+                    if (strVal.equals("-1") || strVal.equals(String.valueOf(xlabel.length)))
+                        res = "";
+                    else {
+                        try{
+                            res = String.valueOf(xlabel[(int) value]);
+                        } catch (Exception e) {
+                            res = "";
+                        }
 
+                    }
+                    return res;
+
+                }
+            });
+            xAxis.setEnabled(true);
+            xAxis.setDrawLabels(true);
             xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+            xAxis.setCenterAxisLabels(true);
+
+            // customize legend
+            Legend legend = barChart.getLegend();
+            legend.setPosition(Legend.LegendPosition.ABOVE_CHART_LEFT);
         }
     }
 
@@ -328,26 +310,31 @@ public class ReportFragment extends Fragment {
             SharedPreferences.Editor ed = sp.edit();
             int goal = sp.getInt("goal", 0);
 
-
             yData[0] = calorieConsumed;
             yData[1] = (float) calorieBurned;
+
+            // calorie remaining
             yData[2] = goal + yData[1] - yData[0];
 
+            // get total for calculating the percentage
+            float total =  yData[0] + yData[1] + yData[2];
+
             List<PieEntry> yEntrys = new ArrayList<>();
-            List<String> xEntrys = new ArrayList<>();
 
             for (int i = 0; i < yData.length; i++) {
-                yEntrys.add(new PieEntry(yData[i], xData[i]));
+                yEntrys.add(new PieEntry(yData[i]/total*100, pieLabel[i]));
             }
 
             // create the data set
             PieDataSet pieDataSet = new PieDataSet(yEntrys, "Report");
+            pieDataSet.setColors(new int[]{ Color.CYAN, Color.GRAY, Color.RED });
             pieDataSet.setSliceSpace(2);
             pieDataSet.setValueTextSize(12);
 
             // create pie data object
             PieData pieData = new PieData(pieDataSet);
 
+            pieData.setValueFormatter(new PercentFormatter());
 
             return pieData;
         }
@@ -360,4 +347,36 @@ public class ReportFragment extends Fragment {
         }
     }
 
+}
+
+
+
+class PercentFormatter implements IValueFormatter {
+
+    public DecimalFormat mFormat;
+    private PieChart pieChart;
+    private boolean percentSignSeparated;
+
+    public PercentFormatter() {
+        mFormat = new DecimalFormat("###,###,##0.0");
+        percentSignSeparated = true;
+    }
+
+    // Can be used to remove percent signs if the chart isn't in percent mode
+    public PercentFormatter(PieChart pieChart) {
+        this();
+        this.pieChart = pieChart;
+    }
+
+    // Can be used to remove percent signs if the chart isn't in percent mode
+    public PercentFormatter(PieChart pieChart, boolean percentSignSeparated) {
+        this(pieChart);
+        this.percentSignSeparated = percentSignSeparated;
+    }
+
+
+    @Override
+    public String getFormattedValue(float value, Entry entry, int dataSetIndex, ViewPortHandler viewPortHandler) {
+        return mFormat.format(value) + (percentSignSeparated ? " %" : "%");
+    }
 }

@@ -6,6 +6,7 @@ import android.arch.persistence.room.Update;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,6 +27,7 @@ import com.example.calorietracker.services.MyServices;
 import com.example.calorietracker.utils.TypeConverter;
 import com.example.calorietracker.utils.Validation;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -56,6 +58,10 @@ public class StepsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         v = inflater.inflate(R.layout.fragment_steps, container, false);
+
+        // set the title of toolbar
+        Toolbar toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
+        toolbar.setTitle("Step");
 
         // initialize variables
         stepList = (ListView) v.findViewById(R.id.lv);
@@ -156,7 +162,8 @@ public class StepsFragment extends Fragment {
     private class AddSteps extends AsyncTask<Integer, Void, String> {
         @Override protected String doInBackground(Integer... input) {
             int addSteps = input[0];
-            Step add = new Step(Calendar.getInstance().getTime().toString(), addSteps);
+            SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
+            Step add = new Step(sdf.format(Calendar.getInstance().getTime()), addSteps);
             db.stepDAO().insert(add);
             return "Success";
         }

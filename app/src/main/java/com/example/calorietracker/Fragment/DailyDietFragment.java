@@ -19,6 +19,7 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.support.v7.widget.Toolbar;
 
 import com.example.calorietracker.API.EdamamAPI;
 import com.example.calorietracker.API.GoogleSearchAPI;
@@ -56,6 +57,11 @@ public class DailyDietFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         v = inflater.inflate(R.layout.fragment_daily_diet, container, false);
+        // set the title of toolbar
+        Toolbar toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
+        toolbar.setTitle("My Daily Diet");
+
+
         spFoodCate = v.findViewById(R.id.spinner_food_category);
         spFoodItem = v.findViewById(R.id.spinner_food_item);
 

@@ -91,6 +91,7 @@ public class LoginActivity extends AppCompatActivity {
                     ed.putString("address", resJson.getString("address") );
                     ed.putString("email", resJson.getString("email") );
                     ed.putInt("userId", resJson.getInt("userId") );
+//                    ed.putInt("goal", 0 );
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
