@@ -215,6 +215,7 @@ public class DailyDietFragment extends Fragment {
             String email = sp.getString("email", null);
             Log.i("test", email);
             String foodName = spFoodItem.getSelectedItem().toString();
+            Log.i("test", foodName);
             JSONObject result = RestClient.saveToComsumption(email, foodName);
             return result;
         }
